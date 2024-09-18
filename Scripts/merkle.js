@@ -70,5 +70,7 @@ function generateMerkleProof() {
 }
 
  
-await generateMerkleTree();
-await generateMerkleProof();
+//await generateMerkleTree();
+//await generateMerkleProof();
+// export default function (generateMerkleTree);  
+export default {generateMerkleProof, generateMerkleTree};

@@ -5,19 +5,41 @@ import {
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import hre, { ethers } from "hardhat";
+//@ts-ignore
 import { generateMerkleTree, generateMerkleProof } from "../Scripts/merkle.js";
 
 describe("MerkleAirdrop", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
+  async function deployTokenFixture() {
 
+     const TobilobaToken =  await ethers.getContractFactory("TobilobaToken");
+     const Token = await TobilobaToken.deploy();
+     return { Token };
+
+  }
+
+  async function deployMerkleAirdrop() {
 
     // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await hre.ethers.getSigners();
+    //const TobilobaToken = await hre.ethers.getSigners();
 
-    const Lock = await hre.ethers.getContractFactory("Lock");
+    const merkleairdrop = await ethers.getContractFactory("MerkleAirdrop")
+    
+    const  { Token } = await loadFixture(deployTokenFixture);
+    const signers = await ethers.getSigners();
+    const [owner, addr1, addr2, addr3, addr4, addr5, addr6, addr7, addr8 ] = signers;
+    
+    const merkleRoot = await generateMerkleTree();
+    const BAYC_ADDRESS = "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d";
+    const airdrop = await merkleairdrop.deploy(Token, BAYC_ADDRESS, merkleRoot);
+    
+
+
+    
+    
+    
     const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
 
     return { lock, unlockTime, lockedAmount, owner, otherAccount };
